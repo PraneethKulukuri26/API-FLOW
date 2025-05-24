@@ -1,0 +1,13 @@
+{
+    "mainWindow": {
+      "width": 1200,
+      "height": 800
+    },
+    "splashWindow": {
+      "width": 400,
+      "height": 300,
+      "delay": 3000
+    },
+    "reactDevURL": "http://localhost:3000"
+  }
+  
