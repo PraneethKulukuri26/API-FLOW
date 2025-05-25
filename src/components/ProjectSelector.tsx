@@ -1,5 +1,6 @@
 // src/components/ProjectSelector.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getProjects } from '../services/projectAPI';
 
 interface Props {
   onProjectCreated: (project: { name: string }) => void;
@@ -7,6 +8,20 @@ interface Props {
 
 const ProjectSelector: React.FC<Props> = ({ onProjectCreated }) => {
   const [projectName, setProjectName] = useState('');
+
+  useEffect(() => {
+    // Fetch projects and log them to console
+    const fetchProjects = async () => {
+      try {
+        const projects = await getProjects();
+        console.log('Projects:', projects);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const handleCreate = () => {
     if (projectName.trim()) {
