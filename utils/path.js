@@ -24,6 +24,12 @@ const getProjectsFile = () => {
     : path.join(getUserDataFolder(), 'projects.json');
 };
 
+const getProjectFile=(id)=>{
+    return idDev
+    ?path.join(getSharedFolder(),`${id}.json`)
+    :path.join(getProdataFolder(),`${id}.json`);
+};
+
 // Ensure folders and files are created (only in prod)
 const ensureUserDataSetup = () => {
   if (isDev) return;
@@ -53,4 +59,5 @@ module.exports = {
   getProdataFolder,
   getProjectsFile,
   ensureUserDataSetup,
+  getProjectFile,
 };
