@@ -467,4 +467,48 @@ const deleteResponse = ({ id, responseId }) => {
     return { id: responseId };
 };
 
-module.exports = { addFolder, editFolder, deleteFolder, addRequest, editRequest, deleteRequest, addResponse, editResponse, deleteResponse};
+const getProjectBlueprintTitlesOnlyWithResponses = (id) => {
+    const filePath = getProjectFile(id);
+
+    if (!fs.existsSync(filePath)) {
+        console.error(`Project file not found for ID: ${id}`);
+        return null;
+    }
+
+    const projectData = fs.readFileSync(filePath, 'utf-8');
+    const project = JSON.parse(projectData);
+
+    const parseFolder = (folder, folderId = '') => {
+        const folders = folder.folder || {};
+        const requests = folder.request || {};
+
+        return {
+            id: folderId || folder.id || '',
+            title: folder.title || '',
+            folders: Object.entries(folders).map(([key, subFolder]) => {
+                const nextId = folderId ? `${folderId}_${key}` : key;
+                return parseFolder(subFolder, nextId);
+            }),
+            requests: Object.entries(requests).map(([reqKey, req]) => {
+                const fullRequestId = folderId ? `${folderId}=${reqKey}` : `${reqKey}`;
+                const responses = req.responses || {};
+                return {
+                    id: fullRequestId,
+                    title: req.title || '',
+                    responses: Object.entries(responses).map(([resKey, res]) => ({
+                        id: `${fullRequestId}*${resKey}`,
+                        title: res.title || '',
+                    })),
+                };
+            }),
+        };
+    };
+
+    const topFolders = project.folder || {};
+
+    return Object.entries(topFolders).map(([key, folder]) =>
+        parseFolder(folder, key)
+    );
+};
+
+module.exports = { addFolder, editFolder, deleteFolder, addRequest, editRequest, deleteRequest, addResponse, editResponse, deleteResponse, getProjectBlueprintTitlesOnlyWithResponses};
