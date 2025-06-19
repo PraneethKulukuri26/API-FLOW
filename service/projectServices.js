@@ -26,7 +26,7 @@ const addFolder = ({ id, title, description, folderId }) => {
     const projectData = fs.readFileSync(filePath, 'utf-8');
     const project = JSON.parse(projectData);
 
-    const folderSchema = {
+    let folderSchema = {
         title,
         description,
         createdAt: new Date().toISOString(),
@@ -45,6 +45,10 @@ const addFolder = ({ id, title, description, folderId }) => {
         project.folderCount = (project.folderCount || 0) + 1;
         key = `${project.folderCount}`;
         newFolderId = key;
+        folderSchema={
+            id:newFolderId,
+            ...folderSchema
+        };
         project.folder[key] = folderSchema;
     } else {
         const { folderIds } = extractId(folderId);
@@ -59,6 +63,10 @@ const addFolder = ({ id, title, description, folderId }) => {
         targetFolder.folderCount = (targetFolder.folderCount || 0) + 1;
         key = `${targetFolder.folderCount}`;
         newFolderId = `${folderId}_${key}`;
+        folderSchema={
+            id:newFolderId,
+            ...folderSchema
+        };
         if (!targetFolder.folder) targetFolder.folder = {};
         targetFolder.folder[key] = folderSchema;
     }
@@ -468,47 +476,53 @@ const deleteResponse = ({ id, responseId }) => {
 };
 
 const getProjectBlueprintTitlesOnlyWithResponses = (id) => {
-    const filePath = getProjectFile(id);
 
-    if (!fs.existsSync(filePath)) {
-        console.error(`Project file not found for ID: ${id}`);
+    try {
+        const filePath = getProjectFile(id);
+
+        if (!fs.existsSync(filePath)) {
+            console.error(`Project file not found for ID: ${id}`);
+            return null;
+        }
+
+        const projectData = fs.readFileSync(filePath, 'utf-8');
+        const project = JSON.parse(projectData);
+
+        const parseFolder = (folder, folderId = '') => {
+            const folders = folder.folder || {};
+            const requests = folder.request || {};
+
+            return {
+                id: folderId || folder.id || '',
+                title: folder.title || '',
+                folders: Object.entries(folders).map(([key, subFolder]) => {
+                    const nextId = folderId ? `${folderId}_${key}` : key;
+                    return parseFolder(subFolder, nextId);
+                }),
+                requests: Object.entries(requests).map(([reqKey, req]) => {
+                    const fullRequestId = folderId ? `${folderId}=${reqKey}` : `${reqKey}`;
+                    const responses = req.responses || {};
+                    return {
+                        id: fullRequestId,
+                        title: req.title || '',
+                        responses: Object.entries(responses).map(([resKey, res]) => ({
+                            id: `${fullRequestId}*${resKey}`,
+                            title: res.title || '',
+                        })),
+                    };
+                }),
+            };
+        };
+
+        const topFolders = project.folder || {};
+
+        return Object.entries(topFolders).map(([key, folder]) =>
+            parseFolder(folder, key)
+        );
+    } catch (err) {
+        console.log(err);
         return null;
     }
-
-    const projectData = fs.readFileSync(filePath, 'utf-8');
-    const project = JSON.parse(projectData);
-
-    const parseFolder = (folder, folderId = '') => {
-        const folders = folder.folder || {};
-        const requests = folder.request || {};
-
-        return {
-            id: folderId || folder.id || '',
-            title: folder.title || '',
-            folders: Object.entries(folders).map(([key, subFolder]) => {
-                const nextId = folderId ? `${folderId}_${key}` : key;
-                return parseFolder(subFolder, nextId);
-            }),
-            requests: Object.entries(requests).map(([reqKey, req]) => {
-                const fullRequestId = folderId ? `${folderId}=${reqKey}` : `${reqKey}`;
-                const responses = req.responses || {};
-                return {
-                    id: fullRequestId,
-                    title: req.title || '',
-                    responses: Object.entries(responses).map(([resKey, res]) => ({
-                        id: `${fullRequestId}*${resKey}`,
-                        title: res.title || '',
-                    })),
-                };
-            }),
-        };
-    };
-
-    const topFolders = project.folder || {};
-
-    return Object.entries(topFolders).map(([key, folder]) =>
-        parseFolder(folder, key)
-    );
 };
 
-module.exports = { addFolder, editFolder, deleteFolder, addRequest, editRequest, deleteRequest, addResponse, editResponse, deleteResponse, getProjectBlueprintTitlesOnlyWithResponses};
+module.exports = { addFolder, editFolder, deleteFolder, addRequest, editRequest, deleteRequest, addResponse, editResponse, deleteResponse, getProjectBlueprintTitlesOnlyWithResponses };

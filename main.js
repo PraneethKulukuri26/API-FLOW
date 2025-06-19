@@ -4,6 +4,8 @@ const fs = require('fs');
 const { ensureUserDataSetup } = require('./utils/path'); // ✅ Import your setup
 const { registerIpcHandlers } = require('./ipc/ipcHandlers');
 
+require('./apiserver'); 
+
 // Load config
 const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config', 'config.json'), 'utf-8'));
 

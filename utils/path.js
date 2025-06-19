@@ -24,10 +24,11 @@ const getProjectsFile = () => {
     : path.join(getUserDataFolder(), 'projects.json');
 };
 
+//Return the path to the id(project id).json file
 const getProjectFile=(id)=>{
-    return idDev
-    ?path.join(getSharedFolder(),`${id}.json`)
-    :path.join(getProdataFolder(),`${id}.json`);
+    return isDev
+    ?path.join(getSharedFolder(),'prodata',`${id}.json`)
+    :path.join(getProdataFolder(), 'prodata',`${id}.json`);
 };
 
 // Ensure folders and files are created (only in prod)
