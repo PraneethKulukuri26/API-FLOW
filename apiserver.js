@@ -1,6 +1,8 @@
 // apiServer.js
 const express = require('express');
 const { getProjects, addProject } = require('./service/projectsServices');
+const {getProjectBlueprintTitlesOnlyWithResponses} =require("./service/projectServices");
+const { error } = require('console');
 
 const app = express();
 const PORT = 4000;
@@ -26,6 +28,16 @@ app.post('/api/projects', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+app.get('/get/project/blueprint',async(req,res)=>{
+    try{
+        const getProjectBlueprint=await getProjectBlueprintTitlesOnlyWithResponses(req.query.id);
+        res.status(200).json(getProjectBlueprint);
+    }catch(err){
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 
 app.listen(PORT, () => {
   console.log(`✅ API Server is running at http://localhost:${PORT}`);
