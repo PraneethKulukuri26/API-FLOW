@@ -1,7 +1,7 @@
 // apiServer.js
 const express = require('express');
 const { getProjects, addProject } = require('./service/projectsServices');
-const {getProjectBlueprintTitlesOnlyWithResponses} =require("./service/projectServices");
+const {getProjectBlueprintTitlesOnlyWithResponses,addFolder} =require("./service/projectServices");
 const { error } = require('console');
 
 const app = express();
@@ -29,13 +29,23 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-app.get('/get/project/blueprint',async(req,res)=>{
+app.get('/api/get/project/blueprint',async(req,res)=>{
     try{
         const getProjectBlueprint=await getProjectBlueprintTitlesOnlyWithResponses(req.query.id);
         res.status(200).json(getProjectBlueprint);
     }catch(err){
-        console.error(error);
+        console.error(err);
         res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+app.post('/api/project/add/folder',async(req,res)=>{
+    try{
+        const folder=await addFolder(req.body);
+        res.status(200).json(folder);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error:'Internal server error'});
     }
 })
 

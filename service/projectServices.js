@@ -26,7 +26,7 @@ const addFolder = ({ id, title, description, folderId }) => {
     const projectData = fs.readFileSync(filePath, 'utf-8');
     const project = JSON.parse(projectData);
 
-    const folderSchema = {
+    let folderSchema = {
         title,
         description,
         createdAt: new Date().toISOString(),
@@ -45,6 +45,10 @@ const addFolder = ({ id, title, description, folderId }) => {
         project.folderCount = (project.folderCount || 0) + 1;
         key = `${project.folderCount}`;
         newFolderId = key;
+        folderSchema={
+            id:newFolderId,
+            ...folderSchema
+        };
         project.folder[key] = folderSchema;
     } else {
         const { folderIds } = extractId(folderId);
@@ -59,6 +63,10 @@ const addFolder = ({ id, title, description, folderId }) => {
         targetFolder.folderCount = (targetFolder.folderCount || 0) + 1;
         key = `${targetFolder.folderCount}`;
         newFolderId = `${folderId}_${key}`;
+        folderSchema={
+            id:newFolderId,
+            ...folderSchema
+        };
         if (!targetFolder.folder) targetFolder.folder = {};
         targetFolder.folder[key] = folderSchema;
     }
