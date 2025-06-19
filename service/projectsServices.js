@@ -95,7 +95,7 @@ const addProject=(project)=>{
     // }
 
     // Write the project ID to the [project_id].json file
-    fs.writeFileSync(idFilePath, JSON.stringify({ id: project.id,folders:[] }, null, 2), 'utf-8');
+    fs.writeFileSync(idFilePath, JSON.stringify({ id: project.id,title:project.title,description:project.description,folderCount:0,folders:[] }, null, 2), 'utf-8');
     // --- End new code ---
 
     return project; // Return the added project object
