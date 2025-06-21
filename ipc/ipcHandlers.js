@@ -12,6 +12,9 @@ const {
     editRequest,
     editResponse,
 } = require("../service/projectServices");
+const {
+    sendRequest,
+}=require("../service/requestServices");
 
 function registerIpcHandlers() {
     ipcMain.handle('get-projects', () => getProjects());
@@ -29,6 +32,9 @@ function registerIpcHandlers() {
     ipcMain.handle('edit-folder', (event, ele) => editFolder(ele));
     ipcMain.handle('edit-request', (event, ele) => editRequest(ele));
     ipcMain.handle('edit-responce', (event, ele) => editResponse(ele));
+
+    //request related handilar
+    ipcMain.handle('send-request',(event,ele)=>sendRequest(ele));
 
 }
 

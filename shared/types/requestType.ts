@@ -2,9 +2,9 @@ import { Request, Response } from './projectType';
 
 export interface AddFolderReq {
     id: string,
-    title: string,
-    description: string,
-    folderId: string
+    title?: string,
+    description?: string,
+    folderId?: string
 }
 
 export interface AddRequestReq {
@@ -37,8 +37,8 @@ export interface DeleteResponceReq {
 export interface EditFolderReq {
     id: string,
     folderId: string,
-    description: string,
-    title: string
+    description?: string,
+    title?: string
 }
 
 export interface EditRequestReq {
@@ -47,8 +47,19 @@ export interface EditRequestReq {
     request: Request
 }
 
+//todo:check
 export interface EditResponseReq {
     id: string,
     responseId: string,
     response: Response
 }
+
+export interface RequestReq {
+    method?: string;
+    url: string;
+    headers?: Record<string, string>;
+    queryParams?: Record<string, string | number | boolean>;
+    bodyType?: 'json' | 'form-data' | 'x-www-form-urlencoded';
+    body?: Record<string, any> | FormData;
+  }
+  

@@ -9,6 +9,7 @@ import {
     EditFolderReq,
     EditRequestReq,
     EditResponseReq,
+    RequestReq
 } from "../../shared/types/requestType";
 
 import {
@@ -16,6 +17,7 @@ import {
     EditFolderResponce,
     EditRequestResponce,
     EditResponceRes,
+    RequestResponse
 } from "../../shared/types/responceType";
 
 export const getProjects = async (): Promise<Project[]> => {
@@ -64,4 +66,9 @@ export const editRequest = async (req: EditRequestReq): Promise<EditRequestRespo
 
 export const editResponce = async (req: EditResponseReq): Promise<EditResponceRes> => {
     return await (window as any).electron.ipcRenderer.invoke('edit-responce', req);
+}
+
+//requist related
+export const sendRequest=async(req:RequestReq):Promise<RequestResponse>=>{
+    return await (window as any).electron.ipcRenderer.invoke('send-request',req);
 }
