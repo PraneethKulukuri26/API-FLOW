@@ -1,9 +1,11 @@
+import {RequestResponse} from "./responceType";
+
 export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  created: string;
-  updated: string;
+  id?: string;
+  title?: string;
+  description?: string;
+  created?: string;
+  updated?: string;
 }
 
 // Response when multiple projects are returned
@@ -24,7 +26,7 @@ export type ProjectCurrentOrAllResponse = ProjectListResponse | CurrentProjectRe
 export interface KeyValueObject {
   key: string,
   value: string,
-  description: string
+  description?: string
 }
 
 export interface formDataObject extends KeyValueObject {
@@ -33,36 +35,34 @@ export interface formDataObject extends KeyValueObject {
 
 export interface BodyObject {
   type: string,
-  raw: string,
-  formData: Array<formDataObject>,
-  x_www_form_urlencoded: Array<KeyValueObject>
+  raw?: string,
+  formData?: Array<formDataObject>,
+  x_www_form_urlencoded?: Array<KeyValueObject>
 }
 
 export interface Request {
-  id: string,
-  title: string,
-  description: string,
-  createdAt: string,
-  method: string,
-  url: string,
-  headers: Array<KeyValueObject>,
-  params: Array<KeyValueObject>,
-  body: BodyObject,
+  id?: string,
+  title?: string,
+  description?: string,
+  createdAt?: string,
+  updatedAt?:string,
+  method?: string,
+  url?: string,
+  headers?: Array<KeyValueObject>,
+  params?: Array<KeyValueObject>,
+  body?: BodyObject,
 }
 
 export interface Folder {
-  id: string,
-  title: string,
-  description: string,
-  createdAt: string
+  id?: string,
+  title?: string,
+  description?: string,
+  createdAt?: string,
+  updatedAt?:string
 }
 
 export interface Response {
-  id: string,
-  title: string,
-  status: string,
-  method: string,
-  url: string,
-  resType: string,
-  resBody: string
+  id?: string,
+  title?: string,
+  body:RequestResponse
 }

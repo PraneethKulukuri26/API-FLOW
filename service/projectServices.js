@@ -421,7 +421,6 @@ const editResponse = ({ id, responseId, response }) => {
 
     // Update only provided fields
     const updatedResponse = {
-        ...existingResponse,
         ...response,
         id: responseId // Ensure the response ID stays consistent
     };

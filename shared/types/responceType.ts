@@ -12,10 +12,26 @@ export interface EditFolderResponce {
     updatedAt: string
 }
 
+//todo:check
 export interface EditRequestResponce extends Request {
 
 }
 
+//todo:check
 export interface EditResponceRes extends Response {
 
 }
+
+export interface RequestResponse {
+    success: boolean;
+    status?: number;
+    statusText?: string;
+    responseTime?: number;
+    responseSize?: number;
+    responseSizeHuman?: string;
+    responseType?: string;
+    headers?: Record<string, string>;
+    data?: any;
+    message?: string;
+  }
+  

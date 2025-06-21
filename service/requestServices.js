@@ -1,4 +1,4 @@
-const sendRequest = async ({ Request }) => {
+const sendRequest = async (Request) => {
     const {
         method = 'GET',
         url,
