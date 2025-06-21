@@ -13,6 +13,9 @@ const {
   editRequest,
   editResponse,
 } = require("./service/projectServices");
+const {
+  sendRequest,
+}=require("./service/requestServices");
 const { error } = require('console');
 
 const app = express();
@@ -143,6 +146,16 @@ app.post('/api/project/edit/request',async(req,res)=>{
 app.post('/api/project/edit/responce',async(req,res)=>{
   try{
     const data=await editResponse(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error'});
+  }
+})
+
+app.post('/api/project/request-call',async (req,res)=>{
+  try{
+    const data=await sendRequest({ Request: req.body.Request });
     res.status(200).json(data);
   }catch(err){
     console.log(err);
