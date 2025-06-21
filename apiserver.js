@@ -1,7 +1,18 @@
 // apiServer.js
 const express = require('express');
-const { getProjects, addProject } = require('./service/projectsServices');
-const {getProjectBlueprintTitlesOnlyWithResponses,addFolder} =require("./service/projectServices");
+const { getProjects, addProject, getCurrentProjectOrAll } = require('./service/projectsServices');
+const {
+  getProjectBlueprintTitlesOnlyWithResponses,
+  addFolder,
+  addRequest,
+  addResponse,
+  deleteFolder,
+  deleteRequest,
+  deleteResponse,
+  editFolder,
+  editRequest,
+  editResponse,
+} = require("./service/projectServices");
 const { error } = require('console');
 
 const app = express();
@@ -29,24 +40,114 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-app.get('/api/get/project/blueprint',async(req,res)=>{
-    try{
-        const getProjectBlueprint=await getProjectBlueprintTitlesOnlyWithResponses(req.query.id);
-        res.status(200).json(getProjectBlueprint);
-    }catch(err){
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+app.get('/api/get/project/current-or-all', async (req, res) => {
+  try {
+    const data = await getCurrentProjectOrAll();
+    res.status(200).json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 })
 
-app.post('/api/project/add/folder',async(req,res)=>{
-    try{
-        const folder=await addFolder(req.body);
-        res.status(200).json(folder);
-    }catch(err){
-        console.log(err);
-        res.status(500).json({error:'Internal server error'});
-    }
+app.get('/api/get/project/blueprint', async (req, res) => {
+  try {
+    const getProjectBlueprint = await getProjectBlueprintTitlesOnlyWithResponses(req.query.id);
+    res.status(200).json(getProjectBlueprint);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+})
+
+app.post('/api/project/add/folder', async (req, res) => {
+  try {
+    const folder = await addFolder(req.body);
+    res.status(200).json(folder);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+})
+
+app.post('/api/project/add/request', async (req, res) => {
+  try {
+    const data = await addRequest(req.body);
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+})
+
+app.post('/api/project/add/responce', async (req, res) => {
+  try {
+    const data = await addResponse(req.body);
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+})
+
+app.post('/api/project/delete/folder', async (req, res) => {
+  try {
+    const data=await deleteFolder(req.body);
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+})
+
+app.post('/api/project/delete/request',async(req,res)=>{
+  try{
+    const data=await deleteRequest(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error'});
+  }
+})
+
+app.post('/api/project/delete/responce',async(req,res)=>{
+  try{
+    const data=await deleteResponse(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error'});
+  }
+})
+
+app.post('/api/project/edit/folder',async(req,res)=>{
+  try{
+    const data=await editFolder(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error'});
+  }
+})
+
+app.post('/api/project/edit/request',async(req,res)=>{
+  try{
+    const data=await editRequest(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error'});
+  }
+})
+
+app.post('/api/project/edit/responce',async(req,res)=>{
+  try{
+    const data=await editResponse(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error'});
+  }
 })
 
 app.listen(PORT, () => {

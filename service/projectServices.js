@@ -45,8 +45,8 @@ const addFolder = ({ id, title, description, folderId }) => {
         project.folderCount = (project.folderCount || 0) + 1;
         key = `${project.folderCount}`;
         newFolderId = key;
-        folderSchema={
-            id:newFolderId,
+        folderSchema = {
+            id: newFolderId,
             ...folderSchema
         };
         project.folder[key] = folderSchema;
@@ -63,8 +63,8 @@ const addFolder = ({ id, title, description, folderId }) => {
         targetFolder.folderCount = (targetFolder.folderCount || 0) + 1;
         key = `${targetFolder.folderCount}`;
         newFolderId = `${folderId}_${key}`;
-        folderSchema={
-            id:newFolderId,
+        folderSchema = {
+            id: newFolderId,
             ...folderSchema
         };
         if (!targetFolder.folder) targetFolder.folder = {};
@@ -108,6 +108,8 @@ const editFolder = ({ id, folderId, title, description }) => {
     // Edit title/description
     if (title !== undefined) targetFolder.title = title;
     if (description !== undefined) targetFolder.description = description;
+    const updatedAt = new Date().toISOString();
+    targetFolder.updatedAt = updatedAt;
 
     // Save changes
     fs.writeFileSync(filePath, JSON.stringify(project, null, 2), 'utf-8');
@@ -245,11 +247,11 @@ const editRequest = ({ id, requestId, request }) => {
 
     // Navigate to target folder
     let targetFolder = project;
-    const { folderIds, resquestId } = extractId(folderId);
+    const { folderIds, resquestId } = extractId(requestId);
 
     for (const fid of folderIds) {
         if (!targetFolder.folder || !targetFolder.folder[fid]) {
-            console.error(`Folder not found for folderId: ${folderId}`);
+            console.error(`Folder not found for folderId: ${fid}`);
             return null;
         }
         targetFolder = targetFolder.folder[fid];
@@ -269,7 +271,8 @@ const editRequest = ({ id, requestId, request }) => {
         ...existingRequest,
         ...request,
         id: requestId,
-        createdAt: existingRequest.createdAt || new Date().toISOString()
+        createdAt: existingRequest.createdAt, //|| new Date().toISOString()
+        updatedAt: new Date().toISOString,
     };
 
     // Update responsesCount if responses were passed
@@ -322,7 +325,7 @@ const deleteRequest = ({ id, requestId }) => {
     // Save changes to file
     fs.writeFileSync(filePath, JSON.stringify(project, null, 2), 'utf-8');
 
-    return { id: requestId, status: 'deleted' };
+    return { id: requestId, deleted: true };
 };
 
 const addResponse = ({ id, requestId, response }) => {
@@ -472,7 +475,7 @@ const deleteResponse = ({ id, responseId }) => {
     // Save updated project to file
     fs.writeFileSync(filePath, JSON.stringify(project, null, 2), 'utf-8');
 
-    return { id: responseId };
+    return { id: responseId, deleted: true };
 };
 
 const getProjectBlueprintTitlesOnlyWithResponses = (id) => {
