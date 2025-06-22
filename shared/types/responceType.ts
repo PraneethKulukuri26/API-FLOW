@@ -1,4 +1,4 @@
-import { Request, Response } from "./projectType"
+import { Request, Response,Folder } from "./projectType"
 
 export interface DeleteResponce {
     id: string,
@@ -33,5 +33,17 @@ export interface RequestResponse {
     headers?: Record<string, string>;
     data?: any;
     message?: string;
-  }
+}
+
+export interface GetFolderRes extends Folder{
+
+}
   
+export interface GetRequestRes extends Request{
+
+}
+
+export interface GetResponceRes extends RequestResponse{
+    id:string,
+    title:string,
+}

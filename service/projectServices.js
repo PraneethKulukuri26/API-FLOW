@@ -170,6 +170,40 @@ const deleteFolder = ({ id, folderId }) => {
     return { id: folderId, deleted: true };
 };
 
+const getFolder = ({ id, folderId }) => {
+    const filePath = getProjectFile(id);
+
+    if (!fs.existsSync(filePath)) {
+        console.error(`Project file not found for ID: ${id}`);
+        return null;
+    }
+
+    const projectData = fs.readFileSync(filePath, 'utf-8');
+    const project = JSON.parse(projectData);
+
+    let targetFolder = project;
+
+    // Traverse to the specified folder using folderId
+    if (folderId) {
+        const { folderIds } = extractId(folderId);
+
+        for (const fid of folderIds) {
+            if (!targetFolder.folder || !targetFolder.folder[fid]) {
+                console.error(`Folder not found: ${folderId}`);
+                return null;
+            }
+            targetFolder = targetFolder.folder[fid];
+        }
+    } else {
+        console.error("folderId is required to get folder.");
+        return null;
+    }
+
+    // Remove 'request' before returning
+    const { request, folder, ...folderWithoutRequest } = targetFolder;
+    return folderWithoutRequest;
+};
+
 const addRequest = ({ id, folderId, request }) => {
     const filePath = getProjectFile(id);
 
@@ -328,6 +362,38 @@ const deleteRequest = ({ id, requestId }) => {
     return { id: requestId, deleted: true };
 };
 
+const getRequest = ({ id, requestId }) => {
+    const filePath = getProjectFile(id);
+
+    if (!fs.existsSync(filePath)) {
+        console.error(`Project file not found for ID: ${id}`);
+        return null;
+    }
+
+    const projectData = fs.readFileSync(filePath, 'utf-8');
+    const project = JSON.parse(projectData);
+
+    // Extract folder path and request ID
+    const { folderIds, resquestId: extractedRequestId } = extractId(requestId);
+
+    let currentFolder = project;
+    for (const fid of folderIds) {
+        if (!currentFolder.folder || !currentFolder.folder[fid]) {
+            console.error(`Invalid folder path in requestId: ${requestId}`);
+            return null;
+        }
+        currentFolder = currentFolder.folder[fid];
+    }
+
+    if (!currentFolder.request || !currentFolder.request[extractedRequestId]) {
+        console.error(`Request not found: ${requestId}`);
+        return null;
+    }
+
+    const { responses, ...requestWithoutResponses } = currentFolder.request[extractedRequestId];
+    return requestWithoutResponses;
+};
+
 const addResponse = ({ id, requestId, response }) => {
     const filePath = getProjectFile(id);
 
@@ -477,6 +543,39 @@ const deleteResponse = ({ id, responseId }) => {
     return { id: responseId, deleted: true };
 };
 
+const getResponse=({id,responseId})=>{
+    const filePath = getProjectFile(id);
+
+    if (!fs.existsSync(filePath)) {
+        console.error(`Project file not found for ID: ${id}`);
+        return null;
+    }
+
+    const projectData = fs.readFileSync(filePath, 'utf-8');
+    const project = JSON.parse(projectData);
+
+    // Extract folder path and response index
+    const { folderIds, resquestId, responceId } = extractId(responseId);
+
+    let currentFolder = project;
+
+    for (const fid of folderIds) {
+        if (!currentFolder.folder || !currentFolder.folder[fid]) {
+            console.error(`Invalid folder path in responseId: ${responseId}`);
+            return null;
+        }
+        currentFolder = currentFolder.folder[fid];
+    }
+
+    const requestObj = currentFolder.request?.[resquestId];
+    if (!requestObj || !requestObj.responses || !requestObj.responses[responceId]) {
+        console.error(`Response not found for ID: ${responseId}`);
+        return null;
+    }
+
+    return requestObj.responses[responceId];
+}
+
 const getProjectBlueprintTitlesOnlyWithResponses = (id) => {
 
     try {
@@ -502,13 +601,14 @@ const getProjectBlueprintTitlesOnlyWithResponses = (id) => {
                     return parseFolder(subFolder, nextId);
                 }),
                 requests: Object.entries(requests).map(([reqKey, req]) => {
-                    const fullRequestId = folderId ? `${folderId}=${reqKey}` : `${reqKey}`;
+                    //const fullRequestId = folderId ? `${folderId}=${reqKey}` : `${reqKey}`;
                     const responses = req.responses || {};
                     return {
-                        id: fullRequestId,
+                        id: req.id,
                         title: req.title || '',
+                        method: req.method,
                         responses: Object.entries(responses).map(([resKey, res]) => ({
-                            id: `${fullRequestId}*${resKey}`,
+                            id: res.id,
                             title: res.title || '',
                         })),
                     };
@@ -527,4 +627,18 @@ const getProjectBlueprintTitlesOnlyWithResponses = (id) => {
     }
 };
 
-module.exports = { addFolder, editFolder, deleteFolder, addRequest, editRequest, deleteRequest, addResponse, editResponse, deleteResponse, getProjectBlueprintTitlesOnlyWithResponses };
+module.exports = {
+    addFolder,
+    editFolder,
+    deleteFolder,
+    getFolder,
+    addRequest,
+    editRequest,
+    deleteRequest,
+    getRequest,
+    addResponse,
+    editResponse,
+    deleteResponse,
+    getResponse,
+    getProjectBlueprintTitlesOnlyWithResponses,
+};
