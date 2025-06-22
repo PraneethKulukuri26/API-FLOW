@@ -12,11 +12,15 @@ const {
   editFolder,
   editRequest,
   editResponse,
+  getFolder,
+  getRequest,
+  getResponse,
 } = require("./service/projectServices");
 const {
   sendRequest,
 }=require("./service/requestServices");
 const { error } = require('console');
+const { createTextChangeRange } = require('typescript');
 
 const app = express();
 const PORT = 4000;
@@ -155,11 +159,41 @@ app.post('/api/project/edit/responce',async(req,res)=>{
 
 app.post('/api/project/request-call',async (req,res)=>{
   try{
-    const data=await sendRequest({ Request: req.body.Request });
+    const data=await sendRequest(req.body.Request );
     res.status(200).json(data);
   }catch(err){
     console.log(err);
     res.status(500).json({error:'Internal server error'});
+  }
+})
+
+app.post('/api/project/get/folder',async(req,res)=>{
+  try{
+    const data=await getFolder(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error.'});
+  }
+})
+
+app.post('/api/project/get/request',async(req,res)=>{
+  try{
+    const data=await getRequest(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error:'Internal server error.'});
+  }
+})
+
+app.post('/api/project/get/response',async(req,res)=>{
+  try{
+    const data=await getResponse(req.body);
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    return res.status(500).json({error:'Internal server error'});
   }
 })
 

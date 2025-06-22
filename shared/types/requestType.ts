@@ -61,5 +61,16 @@ export interface RequestReq {
     queryParams?: Record<string, string | number | boolean>;
     bodyType?: 'json' | 'form-data' | 'x-www-form-urlencoded';
     body?: Record<string, any> | FormData;
-  }
+}
+
+export interface GetFolderReq extends DeleteFolderReq{
+
+}
   
+export interface GetRequestReq extends DeleteRequestReq{
+
+}
+
+export interface GetResponceReq extends DeleteResponceReq{
+    
+}

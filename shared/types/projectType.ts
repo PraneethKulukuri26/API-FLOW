@@ -51,6 +51,7 @@ export interface Request {
   headers?: Array<KeyValueObject>,
   params?: Array<KeyValueObject>,
   body?: BodyObject,
+  responsesCount?:number
 }
 
 export interface Folder {
@@ -58,11 +59,12 @@ export interface Folder {
   title?: string,
   description?: string,
   createdAt?: string,
-  updatedAt?:string
+  updatedAt?:string,
+  folderCount?:number,
+  requestCount?:number,
 }
 
-export interface Response {
+export interface Response extends RequestResponse{
   id?: string,
   title?: string,
-  body:RequestResponse
 }

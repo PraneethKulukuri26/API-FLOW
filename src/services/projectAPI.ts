@@ -9,7 +9,10 @@ import {
     EditFolderReq,
     EditRequestReq,
     EditResponseReq,
-    RequestReq
+    RequestReq,
+    GetFolderReq,
+    GetRequestReq,
+    GetResponceReq,
 } from "../../shared/types/requestType";
 
 import {
@@ -17,7 +20,10 @@ import {
     EditFolderResponce,
     EditRequestResponce,
     EditResponceRes,
-    RequestResponse
+    RequestResponse,
+    GetFolderRes,
+    GetRequestRes,
+    GetResponceRes,
 } from "../../shared/types/responceType";
 
 export const getProjects = async (): Promise<Project[]> => {
@@ -68,7 +74,19 @@ export const editResponce = async (req: EditResponseReq): Promise<EditResponceRe
     return await (window as any).electron.ipcRenderer.invoke('edit-responce', req);
 }
 
+export const getFolder = async (req: GetFolderReq): Promise<GetFolderRes> => {
+    return await (window as any).electron.ipcRenderer.invoke('get-folder', req);
+}
+
+export const getRequest = async (req: GetRequestReq): Promise<GetRequestRes> => {
+    return await (window as any).electron.ipcRenderer.invoke('get-request', req);
+}
+
+export const getResponce = async (req: GetRequestReq): Promise<GetResponceRes> => {
+    return await (window as any).electron.ipcRenderer.invoke('get-response', req);
+}
+
 //requist related
-export const sendRequest=async(req:RequestReq):Promise<RequestResponse>=>{
-    return await (window as any).electron.ipcRenderer.invoke('send-request',req);
+export const sendRequest = async (req: RequestReq): Promise<RequestResponse> => {
+    return await (window as any).electron.ipcRenderer.invoke('send-request', req);
 }

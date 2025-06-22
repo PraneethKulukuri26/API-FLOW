@@ -4,7 +4,7 @@ const sendRequest = async (Request) => {
         url,
         headers = {},
         queryParams = {},
-        bodyType, // 'json', 'form-data', 'x-www-form-urlencoded'
+        bodyType,
         body = {},
     } = Request;
 
@@ -43,9 +43,7 @@ const sendRequest = async (Request) => {
                     }
                 }
                 options.body = formData;
-                if (options.headers['Content-Type']) {
-                    delete options.headers['Content-Type'];
-                }
+                delete options.headers['Content-Type']; // Let browser set correct form-data boundary
             }
         }
 
@@ -66,10 +64,32 @@ const sendRequest = async (Request) => {
         // 8. Parse data based on content-type
         const contentType = response.headers.get('content-type') || '';
         let data;
-        if (contentType.includes('application/json')) {
-            data = JSON.parse(rawData);
-        } else {
+        try {
+            data = contentType.includes('application/json')
+                ? JSON.parse(rawData)
+                : rawData;
+        } catch (e) {
             data = rawData;
+        }
+
+        // 9. Get and parse headers
+        const rawHeaders = Object.fromEntries(response.headers.entries());
+
+        const parsedHeaders  = {};
+        for (const [key, value] of Object.entries(rawHeaders)) {
+            try {
+                // Try parsing only if it starts and ends like a JSON object or array
+                if (
+                    (value.startsWith('{') && value.endsWith('}')) ||
+                    (value.startsWith('[') && value.endsWith(']'))
+                ) {
+                    parsedHeaders [key] = JSON.stringify(JSON.parse(value));
+                } else {
+                    parsedHeaders [key] = value;
+                }
+            } catch {
+                parsedHeaders[key] = value; // fallback to original string
+            }
         }
 
         return {
@@ -80,10 +100,11 @@ const sendRequest = async (Request) => {
             responseSize,
             responseSizeHuman: formatBytes(responseSize),
             responseType: contentType,
-            headers: Object.fromEntries(response.headers.entries()),
+            parsedHeaders,
             data,
         };
     } catch (error) {
+        console.log(error);
         return {
             success: false,
             message: error.message,
@@ -100,7 +121,6 @@ function formatBytes(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-
 module.exports = {
     sendRequest,
-}
+};
